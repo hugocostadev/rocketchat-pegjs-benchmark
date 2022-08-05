@@ -1,0 +1,14 @@
+{
+    "name": "pegjs-dev",
+    "private": true,
+    "scripts": {
+        "benchmark": "node index.js"
+    },
+    "dependencies": {
+        "@types/node": "8",
+        "peggy": "^2.0.1"
+    },
+    "engines": {
+        "node": ">= 8"
+    }
+}
