@@ -8,6 +8,8 @@ For each Pull Request is recommended to get the codes from `develop` and `Pull r
 
 It is needed to convert the code from the file [utils.ts](https://github.com/RocketChat/fuselage/tree/develop/packages/message-parser/src/utils.ts) to Javascript from both branches, since it is written in Typescript.
 
+To convert the file to Javascript you can use this converter: https://extendsclass.com/typescript-to-javascript.html
+
 After converting the code to Javascript, replace the import block from [grammar.pegjs](https://github.com/RocketChat/fuselage/tree/develop/packages/message-parser/src/grammar.pegjs) with the converted code.
 
 In the `benchmarks.js` file add a new item in the array or replace the desired one to compare with develop:
