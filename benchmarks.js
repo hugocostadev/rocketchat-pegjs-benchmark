@@ -34,8 +34,8 @@ const benchmarks = [
         tests: [ ...testFiles ],
     },
     {
-        id: "grammar_PR736",
-        title: "PR #736 - Author: Hugo",
+        id: "grammar_PR800",
+        title: "PR #800 - Author: Hugo",
         tests: [ ...testFiles ],
     },
 ];
