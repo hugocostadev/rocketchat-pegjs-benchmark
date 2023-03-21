@@ -1,139 +1,186 @@
 {
-  var __assign = (this && this.__assign) || function () {
-      __assign = Object.assign || function(t) {
-          for (var s, i = 1, n = arguments.length; i < n; i++) {
-              s = arguments[i];
-              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                  t[p] = s[p];
-          }
-          return t;
-      };
-      return __assign.apply(this, arguments);
-  };
-  var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-      if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-          if (ar || !(i in from)) {
-              if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-              ar[i] = from[i];
-          }
-      }
-      return to.concat(ar || Array.prototype.slice.call(from));
-  };
-  var generate = function (type) {
-      return function (value) {
-          return ({ type: type, value: value });
-      };
-  };
-  var paragraph = generate('PARAGRAPH');
-  var bold = generate('BOLD');
-  var color = function (r, g, b, a) {
-      if (a === void 0) { a = 255; }
-      return ({
-          type: 'COLOR',
-          value: { r: r, g: g, b: b, a: a },
-      });
-  };
-  var heading = function (value, level) {
-      if (level === void 0) { level = 1; }
-      return ({
-          type: 'HEADING',
-          level: level,
-          value: value,
-      });
-  };
-  var code = function (value, language) { return ({
-      type: 'CODE',
-      language: language || 'none',
-      value: value,
-  }); };
-  var bigEmoji = function (value) { return ({
-      type: 'BIG_EMOJI',
-      value: value,
-  }); };
-  var task = function (value, status) { return ({
-      type: 'TASK',
-      status: status,
-      value: value,
-  }); };
-  var inlineCode = generate('INLINE_CODE');
-  var tasks = generate('TASKS');
-  var italic = generate('ITALIC');
-  var plain = generate('PLAIN_TEXT');
-  var strike = generate('STRIKE');
-  var codeLine = generate('CODE_LINE');
-  var isValidLink = function (link) {
-      try {
-          return Boolean(new URL(link));
-      }
-      catch (error) {
-          return false;
-      }
-  };
-  var link = (function () {
-      var fn = generate('LINK');
-      return function (src, label) {
-          var href = isValidLink(src) || src.startsWith('//') ? src : "//".concat(src);
-          return fn({ src: plain(href), label: label || plain(src) });
-      };
-  })();
-  var image = (function () {
-      var fn = generate('IMAGE');
-      return function (src, label) {
-          return fn({ src: plain(src), label: label || plain(src) });
-      };
-  })();
-  var quote = generate('QUOTE');
-  var mentionChannel = (function () {
-      var fn = generate('MENTION_CHANNEL');
-      return function (value) { return fn(plain(value)); };
-  })();
-  var orderedList = generate('ORDERED_LIST');
-  var unorderedList = generate('UNORDERED_LIST');
-  var listItem = function (text, number) { return (__assign({ type: 'LIST_ITEM', value: text }, (number && { number: number }))); };
-  var mentionUser = (function () {
-      var fn = generate('MENTION_USER');
-      return function (value) { return fn(plain(value)); };
-  })();
-  var emoji = function (shortCode) { return ({
-      type: 'EMOJI',
-      value: plain(shortCode),
-      shortCode: shortCode,
-  }); };
-  var emojiUnicode = function (unicode) { return ({
-      type: 'EMOJI',
-      value: undefined,
-      unicode: unicode,
-  }); };
-  var emoticon = function (emoticon, shortCode) { return ({
-      type: 'EMOJI',
-      value: plain(emoticon),
-      shortCode: shortCode,
-  }); };
-  var reducePlainTexts = function (values) {
-      return values.reduce(function (result, item, index) {
-          if (index > 0) {
-              var previous = result[result.length - 1];
-              if (item.type === 'PLAIN_TEXT' && item.type === previous.type) {
-                  previous.value += item.value;
-                  return result;
-              }
-          }
-          return __spreadArray(__spreadArray([], result, true), [item], false);
-      }, []);
-  };
-  var lineBreak = function () { return ({
-      type: 'LINE_BREAK',
-      value: undefined,
-  }); };
-  var katex = function (content) { return ({
-      type: 'KATEX',
-      value: content,
-  }); };
-  var inlineKatex = function (content) { return ({
-      type: 'INLINE_KATEX',
-      value: content,
-  }); };
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var tldts_1 = require("tldts");
+var generate = function (type) {
+    return function (value) {
+        return ({ type: type, value: value });
+    };
+};
+var paragraph = generate('PARAGRAPH');
+var bold = generate('BOLD');
+var color = function (r, g, b, a) {
+    if (a === void 0) { a = 255; }
+    return ({
+        type: 'COLOR',
+        value: { r: r, g: g, b: b, a: a },
+    });
+};
+var heading = function (value, level) {
+    if (level === void 0) { level = 1; }
+    return ({
+        type: 'HEADING',
+        level: level,
+        value: value,
+    });
+};
+var code = function (value, language) { return ({
+    type: 'CODE',
+    language: language || 'none',
+    value: value,
+}); };
+var bigEmoji = function (value) { return ({
+    type: 'BIG_EMOJI',
+    value: value,
+}); };
+var task = function (value, status) { return ({
+    type: 'TASK',
+    status: status,
+    value: value,
+}); };
+var inlineCode = generate('INLINE_CODE');
+var tasks = generate('TASKS');
+var italic = generate('ITALIC');
+var plain = generate('PLAIN_TEXT');
+var strike = generate('STRIKE');
+var codeLine = generate('CODE_LINE');
+var isValidLink = function (link) {
+    try {
+        return Boolean(new URL(link));
+    }
+    catch (error) {
+        return false;
+    }
+};
+var link = function (src, label) { return ({
+    type: 'LINK',
+    value: { src: plain(src), label: label !== null && label !== void 0 ? label : [plain(src)] },
+}); };
+var autoLink = function (src) {
+    var _a = (0, tldts_1.parse)(src, {
+        detectIp: false,
+        allowPrivateDomains: true,
+        validHosts: ['localhost'],
+    }), isIcann = _a.isIcann, isIp = _a.isIp, isPrivate = _a.isPrivate, domain = _a.domain;
+    if (!(isIcann || isIp || isPrivate || domain === 'localhost')) {
+        return plain(src);
+    }
+    var href = isValidLink(src) || src.startsWith('//') ? src : "//".concat(src);
+    return link(href, [plain(src)]);
+};
+var autoEmail = function (src) {
+    var href = "mailto:".concat(src);
+    var _a = (0, tldts_1.parse)(href, {
+        detectIp: false,
+        allowPrivateDomains: true,
+    }), isIcann = _a.isIcann, isIp = _a.isIp, isPrivate = _a.isPrivate;
+    if (!(isIcann || isIp || isPrivate)) {
+        return plain(src);
+    }
+    return link(href, [plain(src)]);
+};
+var image = (function () {
+    var fn = generate('IMAGE');
+    return function (src, label) {
+        return fn({ src: plain(src), label: label || plain(src) });
+    };
+})();
+var quote = generate('QUOTE');
+var mentionChannel = (function () {
+    var fn = generate('MENTION_CHANNEL');
+    return function (value) { return fn(plain(value)); };
+})();
+var orderedList = generate('ORDERED_LIST');
+var unorderedList = generate('UNORDERED_LIST');
+var listItem = function (text, number) { return (__assign({ type: 'LIST_ITEM', value: text }, (number && { number: number }))); };
+var mentionUser = (function () {
+    var fn = generate('MENTION_USER');
+    return function (value) { return fn(plain(value)); };
+})();
+var emoji = function (shortCode) { return ({
+    type: 'EMOJI',
+    value: plain(shortCode),
+    shortCode: shortCode,
+}); };
+var emojiUnicode = function (unicode) { return ({
+    type: 'EMOJI',
+    value: undefined,
+    unicode: unicode,
+}); };
+var emoticon = function (emoticon, shortCode) { return ({
+    type: 'EMOJI',
+    value: plain(emoticon),
+    shortCode: shortCode,
+}); };
+var joinEmoji = function (current, previous, next) {
+    if (current.type !== 'EMOJI' || !current.value || (!previous && !next)) {
+        return current;
+    }
+    var hasEmojiAsNeighbor = (previous === null || previous === void 0 ? void 0 : previous.type) === current.type || current.type === (next === null || next === void 0 ? void 0 : next.type);
+    var hasPlainAsNeighbor = ((previous === null || previous === void 0 ? void 0 : previous.type) === 'PLAIN_TEXT' && previous.value.trim() !== '') ||
+        ((next === null || next === void 0 ? void 0 : next.type) === 'PLAIN_TEXT' && next.value.trim() !== '');
+    var isEmoticon = current.shortCode !== current.value.value;
+    if (current.value && (hasEmojiAsNeighbor || hasPlainAsNeighbor)) {
+        if (isEmoticon) {
+            return current.value;
+        }
+        return __assign(__assign({}, current.value), { value: ":".concat(current.value.value, ":") });
+    }
+    return current;
+};
+var reducePlainTexts = function (values) {
+    return values.reduce(function (result, item, index) {
+        var next = values[index + 1];
+        var current = joinEmoji(item, values[index - 1], next);
+        var previous = result[result.length - 1];
+        if (previous) {
+            if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
+                previous.value += current.value;
+                return result;
+            }
+        }
+        return __spreadArray(__spreadArray([], result, true), [current], false);
+    }, []);
+};
+var lineBreak = function () { return ({
+    type: 'LINE_BREAK',
+    value: undefined,
+}); };
+var katex = function (content) { return ({
+    type: 'KATEX',
+    value: content,
+}); };
+var inlineKatex = function (content) { return ({
+    type: 'INLINE_KATEX',
+    value: content,
+}); };
+var phoneChecker = function (text, number) {
+    if (number.length < 5) {
+        return plain(text);
+    }
+    return link("tel:".concat(number), [plain(text)]);
+};
 }
+
 
 start
   = b:BigEmoji !. { return b; }
@@ -251,11 +298,11 @@ Inline
     )+
     EndOfLine? { return reducePlainTexts(value); }
 
-Whitespace = w:$" "+ { return plain(w); }
+Whitespace = w:$Space+ { return plain(w); }
 
-Escaped = "\\" t:$. { return plain(t); }
+Escaped = "\\" t:$("*" / "_" / "~" / "`" / "#" / ".") { return plain(t); }
 
-Any = !EndOfLine t:$. u:$URL? { return plain(t + u); }
+Any = !EndOfLine t:$. p:$AutolinkedPhone? u:$URL? { return plain(t + p + u); }
 
 // = Line
 
@@ -275,24 +322,27 @@ Space
   / "\t"
 
 anyText
-  = [\x20-\x27] /*     ! " # $ % & ' ( )   */
+  = [\x20-\x27] //     ! " # $ % & '
   / [\x2B-\x40] // + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @
   / [\x41-\x5A] // A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
   / [\x61-\x7A] // a b c d e f g h i j k l m n o p q r s t u v w x y z
   / nonascii
 
-SectionText
-  = [-]+
-  / [\x20-\x40] //   ! " # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @
-  / [\x41-\x60] // A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ `
-  / [\x61-\x7A] // a b c d e f g h i j k l m n o p q r s t u v w x y z
-  / nonascii
+utf8_names_validation = $([-_.] / alphaChar / decimalNumberChar)+
 
-utf8_names_validation = $[0-9a-zA-Z-_.]+
+username_matrix_server_validation = ":" utf8_names_validation
+
+username_email_validation = "@" utf8_names_validation
 
 UserMention
   = t:Text "@"+ user:utf8_names_validation {
       return reducePlainTexts([t, plain('@' + user)])[0];
+    }
+  / "@"+ user:$(utf8_names_validation username_matrix_server_validation) {
+      return mentionUser(user);
+    }
+  / "@"+ user:$(utf8_names_validation username_email_validation) {
+      return mentionUser(user);
     }
   / "@"+ user:utf8_names_validation { return mentionUser(user); }
 
@@ -302,12 +352,14 @@ ChannelMention
     }
   / "#" channel:utf8_names_validation { return mentionChannel(channel); }
 
+emoji_shortCode_name = $[0-9a-zA-Z-_+.]+
+
 Emoji
   = Emoji_shortCode
   / ch:unicodeEmoji { return emojiUnicode(ch); }
 
 Emoji_shortCode
-  = ":" shortCode:$(text:utf8_names_validation) ":" { return emoji(shortCode); }
+  = ":" shortCode:$(text:emoji_shortCode_name) ":" { return emoji(shortCode); }
 
 /* __Italic__ */
 /* _Italic_ */
@@ -359,11 +411,16 @@ AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
 
-InlineCode__ = $(!"`" !"\n" $:.)
+InlineCode__ = $(!"`" !"\n" $.)
+
+FilePath = $(URL_scheme URL_body+)
 
 LinkTitle = text:(Emphasis / Line / Whitespace) { return text; }
 
-LinkRef = text:(URL / p:Phone { return 'tel:' + p.number; }) { return text; }
+LinkRef
+  = text:(URL / FilePath / p:Phone { return 'tel:' + p.number; }) {
+      return text;
+    }
 
 Image
   = "![](" href:LinkRef ")" { return image(href); }
@@ -380,9 +437,11 @@ LinkTitle2
 
 References
   = "[](" href:LinkRef ")" { return link(href); }
-  / "[" title:LinkTitle "](" href:LinkRef ")" { return link(href, title); }
+  / "[" title:LinkTitle* "](" href:LinkRef ")" {
+      return link(href, reducePlainTexts(title));
+    }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" {
-      return link(href, plain(title));
+      return link(href, [plain(title)]);
     }
 
 /* Macros */
@@ -396,36 +455,11 @@ unicode
       return String.fromCharCode(parseInt(digits, 16));
     }
 
-escape
-  = unicode
-  / "\\" ch:[^\r\n\f0-9a-f]i { return ch; }
+AutolinkedPhone = p:Phone { return phoneChecker(p.text, p.number); }
 
-nmstart
-  = [_a-z]i
-  / nonascii
-  / escape
+AutolinkedURL = u:URL { return autoLink(u); }
 
-nmchar
-  = [_a-z0-9-]i
-  / nonascii
-  / escape
-
-string1
-  = "\"" chars:$([^\n\r\f\\"] / "\\" nl:nl { return ''; } / escape)* "\"" {
-      return chars;
-    }
-
-nl
-  = "\n"
-  / "\r\n"
-  / "\r"
-  / "\f"
-
-AutolinkedPhone = p:Phone { return link('tel:' + p.number, plain(p.text)); }
-
-AutolinkedURL = u:URL { return link(u); }
-
-AutolinkedEmail = e:Email { return link('mailto:' + e, plain(e)); }
+AutolinkedEmail = e:Email { return autoEmail(e); }
 
 alpha = [a-zA-Z]
 
@@ -439,31 +473,28 @@ digits = d:$digit+
 
 safe
   = "$"
-  / "-"
-  / "\_"
   / "@"
-  / "."
   / "&"
-  / "="
-  / "%"
-  / "!"
-  / "~"
-  / "_"
   / "+"
+  / "\_"
+  / "_"
+  / "-"
+  / "#"
+  / "?"
 
 extra
-  = "!"
+  = "."
+  / ","
+  / "!"
+  / "%"
+  / "~"
   / "*"
   / "\""
   / "'"
   / ":"
   / ";"
-  / ","
-  / " "
   / "("
   / ")"
-  / "?"
-  / "#"
   / "="
   / "~"
 
@@ -475,11 +506,23 @@ hexByte = a:hexdigit b:hexdigit { return parseInt(a + b, 16); }
 
 domainName
   = "localhost"
-  / $(domainNameLabel ("." domainNameLabel)+)
+  / $(domainNameLabel ("." domainChar domainNameLabel*)+)
 
-domainNameLabel = $(domainChar domainChar+ $("-" domainChar+)*)
+domainNameLabel = $(domainChar+ $("-" domainChar+)*)
 
-domainChar = !"/" !"|" !">" !"<" !safe !extra !EndOfLine !Space .
+domainChar
+  = !extra
+    ("\_" / "_" / "-" / !safe)
+    !EndOfLine
+    !Space
+    !"\\"
+    !"/"
+    !"|"
+    !">"
+    !"<"
+    !"%"
+    !"`"
+    .
 
 /**
  *
@@ -492,6 +535,9 @@ Phone = "+" p:phoneNumber { return { text: '+' + p.text, number: p.number }; }
 phoneNumber
   = p:phonePrefix "-" d:digits {
       return { text: p.text + '-' + d, number: p.number + d };
+    }
+  / p:phonePrefix d1:digits "-" d2:digits {
+      return { text: p.text + d1 + '-' + d2, number: p.number + d1 + d2 };
     }
   / p:phonePrefix d:digits {
       return { text: p.text + d, number: p.number + d };
@@ -509,83 +555,81 @@ phonePrefix
  */
 
 URL
-  = $(
-    s:urlScheme
-      a:urlAuthority
-      p:urlPath?
-      q:urlQuery?
-      f:urlFragment?
-      g:urlPath?
-      h:urlQuery?
-  )
-  / $(
-    urlAuthorityHost
-      p:urlPath?
-      q:urlQuery?
-      f:urlFragment?
-      g:urlPath?
-      h:urlQuery?
-  )
+  = $(URL_scheme URL_authority URL_body*)
+  / $(URL_authorityHost URL_body*)
 
-urlScheme
+URL_scheme
   = $(
-    [[A-Za-z]
-      [A-Za-z0-9+.-]
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]?
-      [A-Za-z0-9+.-]? // up to 32 characters
+    [A-Za-z0-9+-]
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]?
+      [A-Za-z0-9+-]? // up to 32 characters
       ":"
   )
 
-urlAuthority = $("//" urlAuthorityUserInfo? urlAuthorityHost)
+URL_body
+  = (
+    !(extra+ (Whitespace / EndOfLine) / Whitespace)
+      (
+        anyText
+        / "*"
+        / "["
+        / "\/"
+        / "]"
+        / "^"
+        / "_"
+        / "`"
+        / "{"
+        / "}"
+        / "~"
+        / "("
+      )
+  )+
 
-urlAuthorityUserInfo = $(urlAuthorityUser (":" urlAuthorityPassword)? "@")
+URL_authority = $("//" URL_authorityUserInfo? URL_authorityHost)
 
-urlAuthorityUser = $(alpha_digit / !"@" !"/" safe)+
+URL_authorityUserInfo = $(URL_authorityUser (":" URL_authorityPassword)? "@")
 
-urlAuthorityPassword = $(alpha_digit / !"@" !"/" safe)+
+URL_authorityUser = $(alpha_digit / !"@" !"/" safe)+
 
-urlAuthorityHost = t:urlAuthorityHostName (":" urlAuthorityPort)?
+URL_authorityPassword = $(alpha_digit / !"@" !"/" safe)+
 
-urlAuthorityHostName
+URL_authorityHost = t:URL_authorityHostName (":" URL_authorityPort)?
+
+URL_authorityHostName
   = domainName
   / $(digits "." digits "." digits "." digits) // TODO: IPv4 and IPv6
 
-urlAuthorityPort
+URL_authorityPort
   = digits // TODO: from "0" to "65535"
-
-urlPath = $("/" $(alpha_digit / safe)* urlPath*)
-
-urlQuery = $("?" $(alpha_digit / safe)*)
-
-urlFragment = $("#" $(alpha_digit / extra / safe)*)
 
 /**
  *
@@ -650,7 +694,6 @@ inlineKatexEnd
   / & { return options.katex?.dollarSyntax; } "$"
 
 /* Emoticons */
-
 emoticon = & { return options.emoticons; } e:emoticonPattern { return e; }
 
 emoticonPattern
@@ -709,7 +752,7 @@ emoticonPattern
   / e:$(":'(" / ":'-(" / ";(" / ";-(") { return emoticon(e, 'cry'); }
   / e:$(">:(" / ">:-(" / ":@") { return emoticon(e, 'angry'); }
   / e:$(":$" / "=$") { return emoticon(e, 'flushed'); }
-  / e:$"D:" { return emoticon(e, 'fearfulc'); }
+  / e:$"D:" { return emoticon(e, 'fearful'); }
   / e:$("':(" / "':-(" / "'=(") { return emoticon(e, 'sweat'); }
   / e:$(":-X" / ":X" / ":-#" / ":#" / "=X" / "=#") {
       return emoticon(e, 'no_mouth');

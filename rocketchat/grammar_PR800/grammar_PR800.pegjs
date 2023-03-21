@@ -1,138 +1,123 @@
 {
-  var __assign = (this && this.__assign) || function () {
-      __assign = Object.assign || function(t) {
-          for (var s, i = 1, n = arguments.length; i < n; i++) {
-              s = arguments[i];
-              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                  t[p] = s[p];
-          }
-          return t;
-      };
-      return __assign.apply(this, arguments);
-  };
-  var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-      if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-          if (ar || !(i in from)) {
-              if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-              ar[i] = from[i];
-          }
-      }
-      return to.concat(ar || Array.prototype.slice.call(from));
-  };
-  var generate = function (type) {
-      return function (value) {
-          return ({ type: type, value: value });
-      };
-  };
-  var paragraph = generate('PARAGRAPH');
-  var bold = generate('BOLD');
-  var color = function (r, g, b, a) {
-      if (a === void 0) { a = 255; }
-      return ({
-          type: 'COLOR',
-          value: { r: r, g: g, b: b, a: a },
-      });
-  };
-  var heading = function (value, level) {
-      if (level === void 0) { level = 1; }
-      return ({
-          type: 'HEADING',
-          level: level,
-          value: value,
-      });
-  };
-  var code = function (value, language) { return ({
-      type: 'CODE',
-      language: language || 'none',
-      value: value,
-  }); };
-  var bigEmoji = function (value) { return ({
-      type: 'BIG_EMOJI',
-      value: value,
-  }); };
-  var task = function (value, status) { return ({
-      type: 'TASK',
-      status: status,
-      value: value,
-  }); };
-  var inlineCode = generate('INLINE_CODE');
-  var tasks = generate('TASKS');
-  var italic = generate('ITALIC');
-  var plain = generate('PLAIN_TEXT');
-  var strike = generate('STRIKE');
-  var codeLine = generate('CODE_LINE');
-  var isValidLink = function (link) {
-      try {
-          return Boolean(new URL(link));
-      }
-      catch (error) {
-          return false;
-      }
-  };
-  var link = (function () {
-      var fn = generate('LINK');
-      return function (src, label) {
-          var href = isValidLink(src) || src.startsWith('//') ? src : "//".concat(src);
-          return fn({ src: plain(href), label: label || plain(src) });
-      };
-  })();
-  var image = (function () {
-      var fn = generate('IMAGE');
-      return function (src, label) {
-          return fn({ src: plain(src), label: label || plain(src) });
-      };
-  })();
-  var quote = generate('QUOTE');
-  var mentionChannel = (function () {
-      var fn = generate('MENTION_CHANNEL');
-      return function (value) { return fn(plain(value)); };
-  })();
-  var orderedList = generate('ORDERED_LIST');
-  var unorderedList = generate('UNORDERED_LIST');
-  var listItem = function (text, number) { return (__assign({ type: 'LIST_ITEM', value: text }, (number && { number: number }))); };
-  var mentionUser = (function () {
-      var fn = generate('MENTION_USER');
-      return function (value) { return fn(plain(value)); };
-  })();
-  var emoji = function (shortCode) { return ({
-      type: 'EMOJI',
-      value: plain(shortCode),
-      shortCode: shortCode,
-  }); };
-  var emojiUnicode = function (unicode) { return ({
-      type: 'EMOJI',
-      value: undefined,
-      unicode: unicode,
-  }); };
-  var emoticon = function (emoticon, shortCode) { return ({
-      type: 'EMOJI',
-      value: plain(emoticon),
-      shortCode: shortCode,
-  }); };
-  var reducePlainTexts = function (values) {
-      return values.reduce(function (result, item, index) {
-          if (index > 0) {
-              var previous = result[result.length - 1];
-              if (item.type === 'PLAIN_TEXT' && item.type === previous.type) {
-                  previous.value += item.value;
-                  return result;
-              }
-          }
-          return __spreadArray(__spreadArray([], result, true), [item], false);
-      }, []);
-  };
-  var lineBreak = function () { return ({
-      type: 'LINE_BREAK',
-      value: undefined,
-  }); };
-  var katex = function (content) { return ({
-      type: 'KATEX',
-      value: content,
-  }); };
-  var inlineKatex = function (content) { return ({
-      type: 'INLINE_KATEX',
-      value: content,
-  }); };
+  var generate = (type) => (value) => ({ type, value });
+ var paragraph = generate('PARAGRAPH');
+ var bold = generate('BOLD');
+ var color = (r, g, b, a = 255) => ({
+    type: 'COLOR',
+    value: { r, g, b, a },
+});
+ var heading = (value, level = 1) => ({
+    type: 'HEADING',
+    level,
+    value,
+});
+ var code = (value, language) => ({
+    type: 'CODE',
+    language: language || 'none',
+    value,
+});
+ var bigEmoji = (value) => ({
+    type: 'BIG_EMOJI',
+    value,
+});
+ var task = (value, status) => ({
+    type: 'TASK',
+    status,
+    value,
+});
+ var inlineCode = generate('INLINE_CODE');
+ var tasks = generate('TASKS');
+ var italic = generate('ITALIC');
+ var plain = generate('PLAIN_TEXT');
+ var strike = generate('STRIKE');
+ var codeLine = generate('CODE_LINE');
+var isValidLink = (link) => {
+    try {
+        return Boolean(new URL(link));
+    }
+    catch (error) {
+        return false;
+    }
+};
+ var link = (() => {
+    var fn = generate('LINK');
+    return (src, label) => {
+        var href = isValidLink(src) || src.startsWith('//') ? src : `//${src}`;
+        return fn({ src: plain(href), label: label || plain(src) });
+    };
+})();
+ var image = (() => {
+    var fn = generate('IMAGE');
+    return (src, label) => fn({ src: plain(src), label: label || plain(src) });
+})();
+ var quote = generate('QUOTE');
+ var mentionChannel = (() => {
+    var fn = generate('MENTION_CHANNEL');
+    return (value) => fn(plain(value));
+})();
+ var orderedList = generate('ORDERED_LIST');
+ var unorderedList = generate('UNORDERED_LIST');
+ var listItem = (text, number) => (Object.assign({ type: 'LIST_ITEM', value: text }, (number && { number })));
+ var mentionUser = (() => {
+    var fn = generate('MENTION_USER');
+    return (value) => fn(plain(value));
+})();
+ var emoji = (shortCode) => ({
+    type: 'EMOJI',
+    value: plain(shortCode),
+    shortCode,
+});
+ var emojiUnicode = (unicode) => ({
+    type: 'EMOJI',
+    value: undefined,
+    unicode,
+});
+ var emoticon = (emoticon, shortCode) => ({
+    type: 'EMOJI',
+    value: plain(emoticon),
+    shortCode,
+});
+var emoticonTransform = (values) => values.map((item, index, array) => {
+    if (item && item.type === 'EMOJI' && item.value) {
+        var prevItem = array[index - 1];
+        var nextItem = array[index + 1];
+        if (!prevItem && !nextItem) {
+            return Object.assign({}, item);
+        }
+        if ((prevItem === null || prevItem === void 0 ? void 0 : prevItem.type) === 'EMOJI' ||
+            (nextItem === null || nextItem === void 0 ? void 0 : nextItem.type) === 'EMOJI' ||
+            ((prevItem === null || prevItem === void 0 ? void 0 : prevItem.type) === 'PLAIN_TEXT' && (prevItem === null || prevItem === void 0 ? void 0 : prevItem.value) !== ' ') ||
+            ((nextItem === null || nextItem === void 0 ? void 0 : nextItem.type) === 'PLAIN_TEXT' && (nextItem === null || nextItem === void 0 ? void 0 : nextItem.value) !== ' ')) {
+            return Object.assign({}, item.value);
+        }
+    }
+    return item;
+});
+ var reducePlainTexts = (values) => {
+    var items = emoticonTransform(values);
+    return items.reduce((result, item, index) => {
+        if (index > 0) {
+            var previous = result[result.length - 1];
+            if (item.type === 'PLAIN_TEXT' && item.type === previous.type) {
+                previous.value += item.value;
+                return result;
+            }
+        }
+        return [...result, item];
+    }, []);
+};
+ var lineBreak = () => ({
+    type: 'LINE_BREAK',
+    value: undefined,
+});
+ var katex = (content) => ({
+    type: 'KATEX',
+    value: content,
+});
+ var inlineKatex = (content) => ({
+    type: 'INLINE_KATEX',
+    value: content,
+});
 }
 
 start
@@ -359,7 +344,7 @@ AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
 
-InlineCode__ = $(!"`" !"\n" $:.)
+InlineCode__ = $(!"`" !"\n" $.)
 
 LinkTitle = text:(Emphasis / Line / Whitespace) { return text; }
 

@@ -6,7 +6,8 @@
     },
     "dependencies": {
         "@types/node": "8",
-        "peggy": "^2.0.1"
+        "peggy": "^3.0.1",
+        "tldts": "^5.7.104"
     },
     "engines": {
         "node": ">= 8"

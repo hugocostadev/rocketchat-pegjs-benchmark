@@ -354,7 +354,7 @@ AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
 
-InlineCode__ = $(!"`" !"\n" $:.)
+InlineCode__ = $(!"`" !"\n" $.)
 
 LinkTitle = text:(Emphasis / Line / Whitespace) { return text; }
 

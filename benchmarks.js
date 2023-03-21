@@ -27,15 +27,14 @@ const testFiles = [
 ];
 
 const benchmarks = [
-
     {
         id: "develop",
         title: "Develop Branch",
         tests: [ ...testFiles ],
     },
     {
-        id: "grammar_PR800",
-        title: "PR #800 - Author: Hugo",
+        id: "grammar_PR_Refactor",
+        title: "PR Refactor - Author: Hugo",
         tests: [ ...testFiles ],
     },
 ];

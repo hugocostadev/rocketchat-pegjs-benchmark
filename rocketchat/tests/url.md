@@ -83,3 +83,21 @@ ssh://test@test.test;
 [title](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases?query=test12-34&query2=abcd!e/dv/413244000073043351)
 
 [title](https://desk.rocket.chat/support/rocketchat/ShowHomePage.do#Cases/dv/413244000073043351?query=test12-34&query2=abcd!~-._%2B+)
+
+www.n-tv.de
+
+www.n-tv.de/, test
+
+www.n-tv.de, test
+
+https://www.n-tv.de, test
+
+http://te_st.com
+
+www.te_st.com
+
+[te_st](http://te_st.com)
+
+app...https://rocket.chat https://rocket.chat
+
+This is a normal phrase.This in another phrase.
